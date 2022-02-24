@@ -386,7 +386,7 @@ bool MeshMap::initLayerPlugins()
   lethals.clear();
   lethal_indices.clear();
 
-  std::shared_ptr<mesh_map::MeshMap> map(this);
+  boost::shared_ptr<mesh_map::MeshMap> map = boost::shared_from(this);
 
   for (auto& layer : layers)
   {

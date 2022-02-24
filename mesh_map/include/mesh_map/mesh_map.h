@@ -39,6 +39,7 @@
 #define MESH_MAP__MESH_MAP_H
 
 #include <atomic>
+#include <boost/smart_ptr/enable_shared_from.hpp>
 #include <dynamic_reconfigure/server.h>
 #include <geometry_msgs/Point.h>
 #include <lvr2/geometry/BaseVector.hpp>
@@ -57,7 +58,7 @@
 
 namespace mesh_map
 {
-class MeshMap
+class MeshMap : public boost::enable_shared_from
 {
 public:
   typedef boost::shared_ptr<MeshMap> Ptr;
