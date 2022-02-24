@@ -17,7 +17,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES mesh_client
   CATKIN_DEPENDS roscpp
-  DEPENDS CURL EIGEN3 LVR2
+  DEPENDS CURL EIGEN3 LVR2 JSONCPP
 )
 
 include_directories(
