@@ -82,6 +82,22 @@ void getMinMax(const lvr2::VertexMap<float>& map, float& min, float& max);
 Vector toVector(const geometry_msgs::Point& point);
 
 /**
+ * @brief Checks if all values in a vector are nearly 0, with the given precision.
+ * @param vector Vector to check
+ * @param precision
+ * @return true if all elements in vector are nearly 0, false otherwise
+ */
+bool isNearlyZeroVector(const lvr2::BaseVector<float>& vector, float precision = 1e-10f);
+
+/**
+ * Returns zero vector, if is nearly a zero vector.
+ * @param vector
+ * @param precision
+ * @return Original vector if is not nearly a zero vector, zero vectro otherwise.
+ */
+lvr2::BaseVector<float> setToZeroIfIsNearlyZeroVector(const lvr2::BaseVector<float>& vector, float precision = 1e-10f);
+
+/**
  * Computes a geometry_msgs/Pose message from a position, direction and normal vector
  * @param position The position vector
  * @param direction The direction vector

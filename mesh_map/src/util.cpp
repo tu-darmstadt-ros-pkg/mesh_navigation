@@ -64,11 +64,46 @@ Vector toVector(const geometry_msgs::Point& p)
   return Vector(p.x, p.y, p.z);
 }
 
+
+bool isNearlyZeroVector(const lvr2::BaseVector<float>& vector, float precision)
+{
+  return (std::abs(vector.x) < precision &&
+          std::abs(vector.y) < precision &&
+          std::abs(vector.z) < precision);
+}
+
+lvr2::BaseVector<float> setToZeroIfIsNearlyZeroVector(const lvr2::BaseVector<float>& vector, float precision)
+{
+  lvr2::BaseVector<float> result = vector;
+  if (isNearlyZeroVector(result, precision))
+  {
+    result.x = 0;
+    result.y = 0;
+    result.z = 0;
+  }
+  return result;
+}
+
 geometry_msgs::Pose calculatePoseFromDirection(const Vector& position, const Vector& direction, const Normal& normal)
 {
-  Normal ez = normal.normalized();
-  Normal ey = normal.cross(direction).normalized();
-  Normal ex = ey.cross(normal).normalized();
+  Normal local_normal = normal;
+
+  // sometimes the normals are not valid, change them to valid ones
+  if (std::isnan(local_normal.getX()) || std::isnan(local_normal.getY()) || std::isnan(local_normal.getZ()))
+  {
+    local_normal.x = 0;
+    local_normal.y = 0;
+    local_normal.z = 1;
+  }
+
+  // First, compute the components ex,ey and ez as not normalized versions
+  // and check for "nearly 0" as normalization only checks for equality to 0.
+  // In normalization, when all 3 values are "nearly 0", this leads to NaN- and Inf- values.
+  // So set "nearly 0" values to 0 as this leads to correct behavior of the normalize-method.
+
+  Normal ez = setToZeroIfIsNearlyZeroVector(local_normal).normalized();
+  Normal ey = setToZeroIfIsNearlyZeroVector(local_normal.cross(direction)).normalized();
+  Normal ex = setToZeroIfIsNearlyZeroVector(ey.cross(local_normal)).normalized();
 
   tf2::Matrix3x3 tf_basis(ex.x, ey.x, ez.x, ex.y, ey.y, ez.y, ex.z, ey.z, ez.z);
 
