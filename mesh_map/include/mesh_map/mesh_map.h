@@ -67,9 +67,10 @@ public:
 
   /**
    * @brief Reads in the mesh geometry, normals and cost values and publishes all as mesh_msgs
+   * @param recompute_layers If true, the layers are computed regardless of whether they could also be read from the map (e.g. in order to use other parameters).
    * @return true f the mesh and its attributes have been load successfully.
    */
-  bool readMap();
+  bool readMap(bool recompute_layers = false);
 
   /**
    * @brief Loads all configures layer plugins
@@ -79,9 +80,17 @@ public:
 
   /**
    * @brief Initialized all loaded layer plugins
+   * @param recompute_layers If true, the layers are computed regardless of whether they could also be read from the map (e.g. in order to use other parameters).
    * @return true if the loaded layer plugins have been initialized successfully.
    */
-  bool initLayerPlugins();
+  bool initLayerPlugins(bool recompute_layers = false);
+
+
+  /**
+   * @brief Writes the layer data, e.g. to a file, or a database. See AbstractLayer::writeLayer
+   * @return true, if all layer data have been written successfully
+   */
+  bool writeMapLayers();
 
   /**
    * @brief Return and optional vertex handle of to the closest vertex to the given position

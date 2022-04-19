@@ -102,7 +102,7 @@ MeshMap::MeshMap(tf2_ros::Buffer& tf_listener)
   reconfigure_server_ptr->setCallback(config_callback);
 }
 
-bool MeshMap::readMap()
+bool MeshMap::readMap(bool recompute_layers)
 {
   ROS_INFO_STREAM("server url: " << srv_url);
   bool server = false;
@@ -248,7 +248,7 @@ bool MeshMap::readMap()
   }
 
   ROS_INFO_STREAM("Initialize layer plugins...");
-  if (!initLayerPlugins())
+  if (!initLayerPlugins(recompute_layers))
   {
     ROS_FATAL_STREAM("Could not initialize plugins!");
     return false;
@@ -381,7 +381,7 @@ void MeshMap::layerChanged(const std::string& layer_name)
   // TODO new lethals old lethals -> renew potential field! around this areas
 }
 
-bool MeshMap::initLayerPlugins()
+bool MeshMap::initLayerPlugins(bool recompute_layers)
 {
   lethals.clear();
   lethal_indices.clear();
@@ -403,7 +403,7 @@ bool MeshMap::initLayerPlugins()
 
     std::set<lvr2::VertexHandle> empty;
     layer_plugin->updateLethal(lethals, empty);
-    if (!layer_plugin->readLayer())
+    if (recompute_layers || !layer_plugin->readLayer())
     {
       layer_plugin->computeLayer();
     }
@@ -413,6 +413,22 @@ bool MeshMap::initLayerPlugins()
   }
   return true;
 }
+
+
+bool MeshMap::writeMapLayers()
+{
+  bool result = true;
+  for (auto& layer : layers)
+  {
+    if(!layer.second->writeLayer())
+    {
+      result = false;
+    }
+  }
+  return result;
+}
+
+
 
 void MeshMap::combineVertexCosts()
 {
